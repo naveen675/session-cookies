@@ -6,10 +6,10 @@ const users = require('../../models/users');
 
 
 router.get('/', (req,res) => {
-    res.send("inside users");
+    res.send(req.session.cookie);
 })
 
-router.post('/signup', (req,res) => {
+router.post('/user', (req,res) => {
 
     const {username,firstname,lastname,password} = req.body;
 
@@ -25,7 +25,7 @@ router.post('/signup', (req,res) => {
     
 
 })
-router.post('/login', (req,res) => {
+router.post('/session', (req,res) => {
     
     const {username,password} = req.body;
 
@@ -40,6 +40,7 @@ router.post('/login', (req,res) => {
 
             req.session.userId = data['_id'];
             
+            
             res.status(200).send('login succesfull');
             
         }
@@ -47,11 +48,27 @@ router.post('/login', (req,res) => {
         else{
             res.status(203).send('login unsuccesful');
         }
+
+        console.log(req.session.userId);
     }).catch((err) => {
 
         res.status(400).send(`Error Login ${err}`);
 })
 
+})
+
+
+router.post('/me', (req,res) => {
+
+    console.log("inside Update")
+    console.log(req.session.userId);
+    if(! req.session.userId){
+        res.status(400).send('Not logged in');
+    }
+    else{
+        res.status(200).send("updated");
+    }
+    
 })
 
 

@@ -19,23 +19,30 @@ const MongoStore = require('connect-mongo');
 const database = process.env.database;
 const username = process.env.username;
 const password = process.env.password;
+const secret = process.env.secret;
 const uri = `mongodb+srv://${username}:${password}@cluster0.8yytl.mongodb.net/${database}?retryWrites=true&w=majority`;
 
 const connectionParams={
     useNewUrlParser: true,
     useUnifiedTopology: true 
 }
+const GenuuId = () => {
+    return uuid.v4();
+}
 
 db.connect(uri, connectionParams).then(() => {
     app.use('/api/api', session({
-        genid(){
-            return genuuid();
+        genid : (req) => {
+            return uuid();
         },
         store : new MongoStore({client: db.connection.getClient()}),
-        secret : process.env.secret,
+        secret : secret,
         resave: false,
-        saveUninitialized : true
-    }) ,api);
+        saveUninitialized : true,
+        cookie : {maxAge: 30000}
+    })
+    ,api);
+    
 }).catch((err) => {
     console.log(`MongoDb connection Unsuccessful ${err}`);
 
